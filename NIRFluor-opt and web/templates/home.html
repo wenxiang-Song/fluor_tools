@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fluor-tools - Home</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <style>
+    body {
+      background: linear-gradient(135deg, #ecf4ff, #dfefff);
+      font-family: 'Segoe UI', sans-serif;
+      color: #1e293b;
+    }
+    .collision-container {
+      position: relative;
+      width: 350px;
+      height: 350px;
+      margin: auto;
+      background: radial-gradient(circle at center, #e0f2fe, #c7d2fe);
+      border-radius: 1rem;
+      overflow: hidden;
+    }
+    .orb {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      box-shadow: 0 0 20px rgba(59,130,246,0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
+      text-align: center;
+      position: absolute;
+    }
+    #orb1 { background: radial-gradient(circle at 30% 30%, #3b82f6, #1e3a8a); }
+    #orb2 { background: radial-gradient(circle at 30% 30%, #facc15, #f59e0b); }
+    #orb3 { background: radial-gradient(circle at 30% 30%, #c084fc, #9333ea); }
+  </style>
+</head>
+<body>
+
+  <nav class="bg-white/10 backdrop-blur-sm py-4 px-6 shadow-md sticky top-0 z-50">
+    <div class="max-w-6xl mx-auto flex justify-between items-center">
+      <div class="flex items-center gap-2">
+        <img src="/static/logo.png" alt="logo" class="w-10 h-10" />
+        <span class="text-lg font-semibold text-blue-600">Fluor-tools</span>
+      </div>
+      <div class="space-x-6 text-base md:text-lg">
+        <a href="/" class="text-blue-500 font-bold">Home</a>
+        <a href="/index" class="hover:text-blue-600">Optimization</a>
+        <a href="/prediction" class="hover:text-blue-600">Prediction</a>
+        <a href="/about" class="hover:text-blue-600">About</a>
+      </div>
+    </div>
+  </nav>
+
+
+  <main class="flex justify-center px-4 mt-8 mb-8">
+    <div class="w-full max-w-6xl">
+      <div class="bg-white rounded-2xl shadow-lg p-10">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+          <!-- Left: Animated Fluorescence Model -->
+          <div class="bg-gradient-to-br from-blue-100 via-indigo-100 to-purple-100 rounded-2xl p-8 shadow-md">
+            <div class="text-center text-3xl font-extrabold mb-6 
+                bg-gradient-to-r from-indigo-600 via-blue-500 to-purple-500 
+                text-transparent bg-clip-text drop-shadow-md tracking-wide">
+              Fluorescence Model
+            </div>
+            <div class="collision-container" id="collision-box">
+              <div class="orb" id="orb1">Dye<br>Molecule</div>
+              <div class="orb" id="orb2">NIRFluor-opt</div>
+              <div class="orb" id="orb3">Fluor-RLAT</div>
+            </div>
+            <p class="mt-6 text-center text-sm text-blue-700">
+              Modeling dye structure optimization and property prediction using AI.
+            </p>
+          </div>
+  
+          <!-- Right: Text Content -->
+          <div class="text-left">
+            <div>
+              <h1 class="text-4xl font-bold mb-2 text-blue-900 text-left">Welcome to</h1>
+              <h2 class="text-5xl font-bold mb-6 text-blue-600 text-center">Fluor-tools</h2>
+            </div>
+            <p class="text-lg text-blue-800 mb-8">
+              Fluor-tools is an integrated platform for <strong>dye molecule optimization</strong> and <strong>fluorescence property prediction</strong>.
+              It includes two key modules: <strong>NIRFluor-opt</strong> for structural design and <strong>Fluor-RLAT</strong> for predictive analytics.
+            </p>
+            <div class="space-y-4 flex flex-col items-center">
+              <a href="/index" class="w-60 bg-green-500 hover:bg-green-600 text-white font-semibold px-6 py-3 rounded-lg shadow-md transition text-center">
+                Start Optimization
+              </a>
+              <a href="/prediction" class="w-60 bg-blue-500 hover:bg-blue-600 text-white font-semibold px-6 py-3 rounded-lg shadow-md transition text-center">
+                Start Prediction
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="text-center text-blue-500 text-sm py-6 border-t border-blue-200 bg-white/60 backdrop-blur">
+    © 2025 East China University of Science and Technology · School of Pharmacy
+  </footer>
+
+  <script>
+    const boxSize = 350;
+    const orbSize = 100;
+
+    function getNonOverlappingPosition(existing) {
+      let x, y, attempts = 0;
+      do {
+        x = Math.random() * (boxSize - orbSize);
+        y = Math.random() * (boxSize - orbSize);
+        attempts++;
+      } while (existing.some(o => Math.hypot(o.x - x, o.y - y) < orbSize) && attempts < 100);
+      return { x, y };
+    }
+
+    const orbs = ["orb1", "orb2", "orb3"].map(id => ({ el: document.getElementById(id) }));
+    const placed = [];
+    orbs.forEach(orb => {
+      const { x, y } = getNonOverlappingPosition(placed);
+      orb.x = x;
+      orb.y = y;
+      orb.dx = (Math.random() * 0.2 + 0.2) * (Math.random() < 0.5 ? -1 : 1);
+      orb.dy = (Math.random() * 0.2 + 0.2) * (Math.random() < 0.5 ? -1 : 1);
+      placed.push({ x, y });
+    });
+
+    function animate() {
+      orbs.forEach((orb, i) => {
+        orb.x += orb.dx;
+        orb.y += orb.dy;
+
+        if (orb.x <= 0) { orb.x = 0; orb.dx *= -1; }
+        if (orb.x + orbSize >= boxSize) { orb.x = boxSize - orbSize; orb.dx *= -1; }
+        if (orb.y <= 0) { orb.y = 0; orb.dy *= -1; }
+        if (orb.y + orbSize >= boxSize) { orb.y = boxSize - orbSize; orb.dy *= -1; }
+
+        for (let j = i + 1; j < orbs.length; j++) {
+          const other = orbs[j];
+          const dx = orb.x - other.x;
+          const dy = orb.y - other.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < orbSize) {
+            [orb.dx, other.dx] = [other.dx, orb.dx];
+            [orb.dy, other.dy] = [other.dy, orb.dy];
+          }
+        }
+
+        orb.el.style.left = orb.x + 'px';
+        orb.el.style.top = orb.y + 'px';
+      });
+      requestAnimationFrame(animate);
+    }
+    animate();
+  </script>
+
+</body>
+</html>

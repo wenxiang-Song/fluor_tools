@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fluor-tools - Optimization</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <style>
+    body {
+      background: linear-gradient(135deg, #ecf4ff, #dfefff);
+      font-family: 'Segoe UI', sans-serif;
+      color: #1e293b;
+    }
+    .form-container {
+      background: white;
+      border-radius: 1rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      padding: 2rem;
+    }
+    .mol-canvas {
+      background-color: #ffffff;
+      border: 2px solid #cbd5e0; /* 适度淡灰色边框 */
+      border-radius: 0.75rem;
+      padding: 1rem;
+      width: 100%;  /* 配合 Tailwind 的 w-72 控制尺寸 */
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05); /* 轻微阴影增强视觉 */
+    }
+    .mol-svg {
+      width: 100%;
+      height: auto;
+      background-color: #ffffff;
+    }
+  </style>
+  <script src="https://unpkg.com/@rdkit/rdkit/dist/RDKit_minimal.js"></script>
+</head>
+<body>
+  <nav class="bg-white/10 backdrop-blur-sm py-4 px-6 shadow-md sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto flex justify-between items-center">
+      <div class="flex items-center gap-2">
+        <img src="/static/logo.png" alt="logo" class="w-10 h-10" />
+        <span class="text-lg font-semibold text-blue-600">Fluor-tools</span>
+      </div>
+      <div class="space-x-6 text-base md:text-lg">
+        <a href="/" class="hover:text-blue-600">Home</a>
+        <a href="/index" class="text-blue-500 font-bold">Optimization</a>
+        <a href="/prediction" class="hover:text-blue-600">Prediction</a>
+        <a href="/about" class="hover:text-blue-600">About</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="flex justify-center px-4 mt-0 mb-0">
+    <div class="w-full max-w-screen-xl mt-8">
+      <div class="form-container">
+        <!-- 标题部分（图标固定在左，文字延伸到最右，全部左对齐，两端对齐文字） -->
+        <div class="flex flex-col lg:flex-row items-start justify-start gap-10 mb-10 px-4">
+          <img src="./static/logo-NIRFluor-opt.png" alt="NIRFluor-opt Logo"
+              class="w-44 h-44 rounded-2xl shadow-xl border border-blue-200 bg-white p-2" />
+          <div class="text-left flex-1">
+            <h1 class="text-5xl font-extrabold text-blue-900 mb-4 tracking-wide">NIRFluor-opt</h1>
+            <p class="text-lg leading-relaxed text-gray-700 text-justify">
+              <span class="font-semibold text-blue-700">NIRFluor-opt</span> is an intelligent optimization platform designed for
+              near-infrared (NIR) fluorescent molecule engineering. Built on a matched molecular pair (MMP) algorithm, 
+              <span class="font-semibold text-blue-700">NIRFluor-opt</span>
+              integrates molecular structure parsing, similarity control, and structure generation algorithms to provide
+              intelligent molecular recommendations that balance fluorescence performance and synthetic feasibility. It serves
+              cutting-edge drug development and material innovation.
+            </p>
+          </div>
+        </div>
+
+
+        <!-- 输入表单与结构图并排 -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+          <!-- 表单 -->
+          <form action="/run_model" method="post" class="space-y-4 lg:col-span-2">
+            <div>
+              <label for="smiles" class="block font-medium mb-1">Enter SMILES</label>
+              <input type="text" id="smiles" name="smiles" required
+                     class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                     value="CC1(C)C2=C(C=CC=C2)[N+](CC)=C1/C=C/C=C/C=C3N(CC)C4=C(C=CC=C4)C\3(C)C"
+                     oninput="renderPreview()">
+            </div>
+            <div>
+              <label for="similarity_value" class="block font-medium mb-1">Enter Similarity Value (0-1)</label>
+              <input type="number" id="similarity_value" name="similarity_value" step="0.01" min="0" max="1" value="0.2"
+                     required class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400">
+            </div>
+            <button type="submit"
+                    class="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-2 rounded-md transition">
+              Start Optimization
+            </button>
+          </form>
+
+          <!-- 实时结构图 -->
+          <div class="flex justify-center items-center">
+            <div id="preview-canvas" class="mol-canvas w-70 h-70"></div>
+          </div>
+        </div>
+
+        <!-- 消息显示 -->
+        <div class="mt-6">
+          {% if success is not none %}
+            {% if success %}
+              <h3 class="text-green-600 font-semibold">Model run completed successfully!</h3>
+              <div class="mt-4 grid grid-cols-1 md:grid-cols-3 gap-3">
+                <a href="/download/new_molecules.csv" class="block w-full text-center bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded">Download new_molecules.csv</a>
+                <a href="/download/transform_rules.csv" class="block w-full text-center bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded">Download transform_rules.csv</a>
+                <a href="/" class="block w-full text-center bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded">Run New Calculation</a>
+              </div>
+            {% else %}
+              <h3 class="text-green-600 font-semibold">Input the molecular SMILES and Similarity Value, then click Run to proceed with the optimization.</h3>
+            {% endif %}
+          {% endif %}
+
+          {% if error %}
+            <div class="mt-4 text-red-700 bg-red-100 border border-red-300 px-4 py-2 rounded-md">
+              {{ error }}
+            </div>
+          {% endif %}
+        </div>
+
+        <!-- 结构图展示 -->
+        {% if smiles_list %}
+        <div class="mt-10">
+          <h2 class="text-2xl font-semibold text-blue-800 mb-6 text-center">Top 20 Molecules</h2>
+          <div id="mol-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6"></div>
+          <script>
+            const smilesList = {{ smiles_list | tojson | safe }};
+            const molContainer = document.getElementById("mol-container");
+
+            initRDKitModule().then(function(RDKit) {
+              smilesList.forEach((smiles, idx) => {
+                try {
+                  const mol = RDKit.get_mol(smiles);
+                  let svg = mol.get_svg();
+                  svg = svg.replace("<svg ", '<svg class="mol-svg" style="background-color:#ffffff;" ');
+                  const card = document.createElement("div");
+                  card.className = "mol-canvas";
+                  const label = document.createElement("div");
+                  label.className = "text-sm text-blue-900 font-medium mb-2";
+                  label.textContent = `#${idx + 1}`;
+                  const svgWrapper = document.createElement("div");
+                  svgWrapper.innerHTML = svg;
+                  card.appendChild(label);
+                  card.appendChild(svgWrapper);
+                  molContainer.appendChild(card);
+                  mol.delete();
+                } catch (e) {
+                  console.error("SMILES parse error:", smiles, e);
+                }
+              });
+            });
+          </script>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </main>
+
+  <footer class="text-center text-blue-500 text-sm py-6 border-t border-blue-200 bg-white/60 backdrop-blur mt-12">
+    <div class="w-full max-w-screen-xl mx-auto px-4 mb-4">
+      <img src="./static/copyright.png" alt="Copyright"
+           class="w-full rounded-xl shadow-md border border-blue-100 bg-white" />
+    </div>
+    © 2025 East China University of Science and Technology · School of Pharmacy
+  </footer>
+
+  <!-- 实时渲染脚本 -->
+  <script>
+    let RDKitReady = null;
+    initRDKitModule().then(function (RDKit) {
+      RDKitReady = RDKit;
+      renderPreview();
+    });
+
+    function renderPreview() {
+      const smiles = document.getElementById("smiles").value;
+      const container = document.getElementById("preview-canvas");
+      container.innerHTML = "";
+      if (RDKitReady && smiles) {
+        try {
+          const mol = RDKitReady.get_mol(smiles);
+          const svg = mol.get_svg();
+          container.innerHTML = svg;
+          mol.delete();
+        } catch (e) {
+          container.innerHTML = '<span class="text-red-600 text-sm">Invalid SMILES</span>';
+        }
+      }
+    }
+  </script>
+</body>
+</html>

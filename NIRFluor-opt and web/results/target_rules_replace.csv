@@ -1,0 +1,24 @@
+element_tran,node1,node2
+ --->>>--- O=[N+]([O-])c1ccc([*:1])cc1,,O=[N+]([O-])c1ccc([*:1])cc1
+ --->>>--- O[*:1],,O[*:1]
+ --->>>--- Nc1ccc([*:1])cc1,,Nc1ccc([*:1])cc1
+ --->>>--- COc1ccc(C=C[*:1])c(OC)c1,,COc1ccc(C=C[*:1])c(OC)c1
+ --->>>--- COc1ccc([*:1])cc1,,COc1ccc([*:1])cc1
+ --->>>--- CN1C(=CC=C[*:1])C=Cc2ccccc21,,CN1C(=CC=C[*:1])C=Cc2ccccc21
+ --->>>--- CN1C(=CC=C[*:1])C(C)(C)c2ccccc21,,CN1C(=CC=C[*:1])C(C)(C)c2ccccc21
+ --->>>--- CN1C(=C[*:1])C=Cc2ccccc21,,CN1C(=C[*:1])C=Cc2ccccc21
+ --->>>--- CN1C(=C[*:1])C(C)(C)c2ccccc21,,CN1C(=C[*:1])C(C)(C)c2ccccc21
+ --->>>--- CN(C)c1ccc2c(c1)OC(c1ccccc1)=CC2=CC=CC=C[*:1],,CN(C)c1ccc2c(c1)OC(c1ccccc1)=CC2=CC=CC=C[*:1]
+ --->>>--- CN(C)c1ccc2c(c1)OC(c1ccccc1)=CC2=CC=C[*:1],,CN(C)c1ccc2c(c1)OC(c1ccccc1)=CC2=CC=C[*:1]
+ --->>>--- CN(C)c1ccc(-c2ccc([*:1])s2)cc1,,CN(C)c1ccc(-c2ccc([*:1])s2)cc1
+ --->>>--- CN(C)c1ccc(C=C[*:1])cc1,,CN(C)c1ccc(C=C[*:1])cc1
+ --->>>--- CN(C)c1ccc([*:1])cc1,,CN(C)c1ccc([*:1])cc1
+ --->>>--- CN(C)C=C[*:1],,CN(C)C=C[*:1]
+ --->>>--- CN(C)[*:1],,CN(C)[*:1]
+ --->>>--- ClC=C[*:1],,ClC=C[*:1]
+ --->>>--- Cl[*:1],,Cl[*:1]
+ --->>>--- CCN1C(=CC=C[*:1])Sc2ccccc21,,CCN1C(=CC=C[*:1])Sc2ccccc21
+ --->>>--- CCN1C(=C[*:1])Sc2ccccc21,,CCN1C(=C[*:1])Sc2ccccc21
+ --->>>--- C(=C[*:1])c1ccc(N2c3ccccc3CCc3ccccc32)cc1,,C(=C[*:1])c1ccc(N2c3ccccc3CCc3ccccc32)cc1
+ --->>>--- C(=C[*:1])c1c[nH]c2ccccc12,,C(=C[*:1])c1c[nH]c2ccccc12
+ --->>>--- C#Cc1ccc([*:1])cc1,,C#Cc1ccc([*:1])cc1

@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fluor-tools - Prediction</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <style>
+    body {
+      background: linear-gradient(135deg, #ecf4ff, #dfefff);
+      font-family: 'Segoe UI', sans-serif;
+      color: #1e293b;
+    }
+    .form-container {
+      background: white;
+      border-radius: 1rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      padding: 2rem;
+    }
+    .mol-canvas {
+      background-color: #ffffff;
+      border: 2px solid #cbd5e0;
+      border-radius: 0.75rem;
+      padding: 1rem;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    }
+    .mol-svg {
+      width: 100%;
+      height: auto;
+      background-color: #ffffff;
+    }
+    .result-table table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .result-table th,
+    .result-table td {
+      border: 1px solid #ccc;
+      padding: 10px;
+      text-align: center;
+    }
+    .result-table th {
+      background-color: #f2f2f2;
+    }
+    .loading {
+      display: none;
+      text-align: center;
+      margin-top: 20px;
+    }
+    .loading img {
+      width: 40px;
+      vertical-align: middle;
+    }
+    .loading span {
+      margin-left: 10px;
+      font-weight: bold;
+      color: #555;
+    }
+  </style>
+  <script src="https://unpkg.com/@rdkit/rdkit/dist/RDKit_minimal.js"></script>
+</head>
+<body>
+  <nav class="bg-white/10 backdrop-blur-sm py-4 px-6 shadow-md sticky top-0 z-50">
+    <div class="max-w-6xl mx-auto flex justify-between items-center">
+      <div class="flex items-center gap-2">
+        <img src="/static/logo.png" alt="logo" class="w-10 h-10" />
+        <span class="text-lg font-semibold text-blue-600">Fluor-tools</span>
+      </div>
+      <div class="space-x-6 text-base md:text-lg">
+        <a href="/" class="hover:text-blue-600">Home</a>
+        <a href="/index" class="hover:text-blue-600">Optimization</a>
+        <a href="/prediction" class="text-blue-500 font-bold">Prediction</a>
+        <a href="/about" class="hover:text-blue-600">About</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="flex justify-center px-4 mt-0 mb-0">
+    <div class="w-full max-w-screen-xl mt-8">
+      <div class="form-container">
+
+        <!-- 标题部分（图标左，文字右扩展，整体左对齐） -->
+        <div class="flex flex-col lg:flex-row items-start justify-start gap-10 mb-10 px-4">
+          <img src="./static/logo-Fluor-RLAT.png" alt="Fluor-RLAT Logo"
+              class="w-44 h-44 rounded-2xl shadow-xl border border-blue-200 bg-white p-2" />
+          <div class="text-left flex-1">
+            <h2 class="text-5xl font-extrabold text-blue-900 mb-4 tracking-wide">Fluor-RLAT</h2>
+            <p class="text-lg leading-relaxed text-gray-700 text-justify">
+              <span class="font-semibold text-blue-700">Fluor-RLAT</span> is a deep learning-based platform for predicting the photophysical 
+              properties of fluorescent molecules. By inputting a SMILES molecular structure and solvent environment, the platform can predict 
+              key optical parameters including fluorescence absorption wavelength, emission wavelength, quantum yield, and molar absorption 
+              coefficient. It provides data-driven 
+              research support for applications in fluorescent probe development, bioimaging studies, and functional materials science.
+            </p>
+          </div>
+        </div>
+
+        {% if error %}
+          <div class="text-red-600 font-semibold text-center mb-4">{{ error }}</div>
+        {% endif %}
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+          <!-- 表单 -->
+          <form method="post" onsubmit="showLoading()" class="space-y-4 lg:col-span-2">
+            <div>
+              <label for="smiles" class="block font-medium mb-1">SMILES Structure</label>
+              <input type="text" id="smiles" name="smiles" required
+                class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                value="COc1cccc(C2=CC3=C(c4c(C)cc(C)cc4C)c4cc(-c5cccc(OC)c5)c(-c5cccc(OC)c5)n4[B-](F)(F)[N+]3=C2c2cccc(OC)c2)c1">
+            </div>
+            <div>
+              <label for="solvent" class="block font-medium mb-1">Solvent Name</label>
+              <select id="solvent" name="solvent" required class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400">
+                <option value="CH2Cl2">CH2Cl2 (ClCCl)</option>
+                <option value="MeOH">MeOH (CO)</option>
+                <option value="EtOH">EtOH (CCO)</option>
+                <option value="CHCl3">CHCl3 (ClC(Cl)Cl)</option>
+                <option value="MeCN">MeCN (CC#N)</option>
+                <option value="THF">THF (C1CCOC1)</option>
+                <option value="Toluene">Toluene (Cc1ccccc1)</option>
+                <option value="DMSO">DMSO (CS(C)=O)</option>
+                <option value="H2O">H2O (O)</option>
+                <option value="Benzene">Benzene (c1ccccc1)</option>
+              </select>
+            </div>
+            <button type="submit" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 rounded-md transition">Run Prediction</button>
+            <div class="loading" id="loading">
+              <img src="https://i.gifer.com/ZZ5H.gif" alt="Loading...">
+              <span>Running prediction... Please wait about 1 min.</span>
+            </div>
+          </form>
+
+          <!-- 实时结构图 -->
+          <div class="flex justify-center items-center">
+            <div id="preview-canvas" class="mol-canvas w-72 h-72"></div>
+          </div>
+        </div>
+
+        {% if result_table %}
+          <h3 class="mt-8 text-2xl font-semibold text-center text-blue-800">Prediction Results</h3>
+          <div class="overflow-x-auto mt-4 result-table">
+            {{ result_table | safe }}
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </main>
+
+  <footer class="text-center text-blue-500 text-sm py-6 border-t border-blue-200 bg-white/60 backdrop-blur mt-12">
+    <div class="w-full max-w-screen-xl mx-auto px-4 mb-4">
+      <img src="./static/copyright.png" alt="Copyright"
+           class="w-full rounded-xl shadow-md border border-blue-100 bg-white" />
+    </div>
+    © 2025 East China University of Science and Technology · School of Pharmacy
+  </footer>
+
+  <script>
+    function showLoading() {
+      document.getElementById('loading').style.display = 'block';
+    }
+
+    initRDKitModule().then(function(RDKit) {
+      const smilesInput = document.getElementById("smiles");
+      const previewCanvas = document.getElementById("preview-canvas");
+
+      function updatePreview(smiles) {
+        try {
+          const mol = RDKit.get_mol(smiles);
+          const svg = mol.get_svg();
+          previewCanvas.innerHTML = svg;
+          mol.delete();
+        } catch (err) {
+          previewCanvas.innerHTML = '<div class="text-sm text-red-500">Invalid SMILES</div>';
+        }
+      }
+
+      smilesInput.addEventListener("input", () => {
+        updatePreview(smilesInput.value);
+      });
+
+      updatePreview(smilesInput.value);
+    });
+  </script>
+</body>
+</html>

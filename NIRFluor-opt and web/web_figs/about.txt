@@ -1,0 +1,1 @@
+About: NIRFluor-opt is a computational tool for dye structure optimization. It employs the MMP method specifically tailored for dye structures, enabling the targeted transformation from non-NIR to NIR properties and optimizing molecular structures to achieve automated dye design.
