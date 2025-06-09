@@ -88,13 +88,13 @@ python run.py
 
 ## 🧠 Fluor-tools Architecture
 
-![Architecture](INSERT-RLAT-IMAGE-URL-HERE)
+![Architecture]([INSERT-RLAT-IMAGE-URL-HERE](https://github.com/wenxiang-Song/fluor_tools/blob/main/Figure1.png?raw=true))
 
 ---
 
 ## 📬 Contact
 
-For issues or inquiries, please open an [Issue](https://github.com/your-repo/issues) or contact the developers via the project homepage.
+For issues or inquiries, please open an [Issue] or contact the developers via the project homepage.
 
 ---
 
