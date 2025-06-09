@@ -88,8 +88,7 @@ python run.py
 
 ## 🧠 Fluor-tools Architecture
 
-![Architecture]([INSERT-RLAT-IMAGE-URL-HERE](https://github.com/wenxiang-Song/fluor_tools/blob/main/Figure1.png?raw=true))
-
+![image]([https://github.com/wenxiang-Song/fluor_pred/blob/main/figures/2.png?raw=true](https://github.com/wenxiang-Song/fluor_tools/blob/main/Figure1.png?raw=true))
 ---
 
 ## 📬 Contact
