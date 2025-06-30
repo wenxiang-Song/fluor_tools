@@ -1,3 +1,8 @@
+# 🔗 Notice Regarding Website Access During System Upgrade
+👉 Due to the ongoing service system upgrade at our university, our website will only be accessible from 8:00 AM to 6:00 PM (Beijing Time). Outside these hours, access will be restricted to on-campus networks only.
+
+We apologize for any inconvenience this may cause. If you require large-scale computational tasks, please refer to the following instructions for localized processing.
+---
 # Fluor-tools
 
 **Fluor-tools** is an integrated web-based and local computational platform for dye structure optimization and property prediction. It includes two core modules:
